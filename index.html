@@ -40,17 +40,27 @@
         </div>
 
         <div class="card" id="capture-card" style="display: none;">
-            <h3 id="step-title">Paso 1: Seguridad Perimetral</h3>
-            <p id="step-desc">Tome una fotografía que demuestre la presencia de extintores y delimitación del área de trabajo.</p>
-            
-            <input type="file" accept="image/*" capture="environment" id="camera-input" onchange="procesarFoto()">
-            
-            <div class="step-box" id="ia-feedback">
-                <strong>🤖 Agente de IA analizando...</strong>
-                <p id="ia-text">Esperando fotografía...</p>
-            </div>
-        </div>
+    <h3 id="step-title">Paso 1: Seguridad Perimetral</h3>
+    <p id="step-desc">Tome una fotografía o seleccione una del carrete que demuestre la presencia de extintores y delimitación del área de trabajo.</p>
+    
+    <div style="margin-bottom: 15px; text-align: center;">
+        <span style="font-size: 14px; font-weight: bold; color: var(--secondary); display: block; margin-bottom: 5px;">📸 Foto de Referencia (Reporte Aprobado):</span>
+        <img id="img-referencia" src="https://via.placeholder.com/400x250/122342/ffffff?text=Ejemplo:+Extintor+y+Señalética" alt="Ejemplo aprobado" style="width: 100%; max-width: 400px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
     </div>
+
+    <label for="camera-input" style="font-size: 14px; color: #555;">Subir evidencia:</label>
+    <input type="file" accept="image/*" id="camera-input" onchange="procesarFoto()">
+    
+    <div id="preview-container" style="display: none; margin-top: 15px; text-align: center;">
+        <span style="font-size: 14px; font-weight: bold; color: green; display: block; margin-bottom: 5px;">✅ Tu captura / archivo seleccionado:</span>
+        <img id="img-preview" src="" alt="Previsualización" style="width: 100%; max-width: 400px; border-radius: 5px; border: 2px dashed green;">
+    </div>
+    
+    <div class="step-box" id="ia-feedback" style="display: none; margin-top: 15px;">
+        <strong>🤖 Agente de IA analizando...</strong>
+        <p id="ia-text">Esperando fotografía...</p>
+    </div>
+</div>
 
     <script>
         const estacionSel = document.getElementById('estacion');
@@ -82,13 +92,28 @@
         }
 
         function procesarFoto() {
-            const feedback = document.getElementById('ia-feedback');
-            const iaText = document.getElementById('ia-text');
-            feedback.style.display = 'block';
-            iaText.innerText = "Foto recibida. Validando con el Anexo del manual de procedimientos e imitando el formato aprobado...";
+    const input = document.getElementById('camera-input');
+    const previewContainer = document.getElementById('preview-container');
+    const imgPreview = document.getElementById('img-preview');
+    const feedback = document.getElementById('ia-feedback');
+    const iaText = document.getElementById('ia-text');
+
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            // Muestra la foto seleccionada (ya sea de la cámara o del carrete)
+            imgPreview.src = e.target.result;
+            previewContainer.style.display = 'block';
             
-            // Aquí se conectará la API del agente de IA en la Fase 2
+            // Activa la respuesta simulada del Agente de IA
+            feedback.style.display = 'block';
+            iaText.innerText = "Foto recibida correctamente de la fuente. Validando texturas y componentes con el Anexo del manual de procedimientos del SPR...";
         }
+        
+        reader.readAsDataURL(input.files[0]);
+    }
+}
 
         // Registro del Service Worker para la PWA
         if ('serviceWorker' in navigator) {
