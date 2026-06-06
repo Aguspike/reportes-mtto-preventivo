@@ -12,11 +12,21 @@
         .container { padding: 20px; max-width: 500px; margin: 0 auto; }
         .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
         label { font-weight: bold; display: block; margin-bottom: 8px; color: var(--primary); }
-        select, input[type="file"] { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 16px; }
+        select { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 16px; }
         .btn { background: var(--secondary); color: white; border: none; padding: 12px; width: 100%; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.3s; }
         .btn:hover { background: #7A1A31; }
+        .btn-disabled { background: #ccc !important; cursor: not-allowed; }
         .step-box { background: #E9EDF5; border-left: 4px solid var(--primary); padding: 15px; margin-top: 15px; border-radius: 0 5px 5px 0; display: none; }
+        
+        /* Contenedor de Referencia */
         .reference-box { background: #FFF3CD; padding: 15px; border-radius: 5px; border: 1px solid #FFEBAA; margin-bottom: 20px; text-align: center; }
+        .reference-img { width: 100%; max-width: 400px; border-radius: 5px; border: 1px solid #ddd; display: block; margin: 10px auto 0 auto; background: #e9ecef; }
+        
+        /* Estilos para los dos botones de captura */
+        .capture-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .btn-capture { background: var(--primary); color: white; padding: 12px; border: none; border-radius: 5px; font-size: 14px; font-weight: bold; cursor: pointer; text-align: center; display: block; }
+        .btn-gallery { background: #4A5568; }
+        input[type="file"] { display: none; } /* Ocultamos los inputs feos nativos */
     </style>
 </head>
 <body>
@@ -41,21 +51,26 @@
         </div>
 
         <div class="card" id="capture-card" style="display: none;">
-            <h3 id="step-title">Paso 1: Seguridad Perimetral</h3>
-            <p id="step-desc">Tome una fotografía o seleccione una del carrete que demuestre la presencia de extintores y delimitación del área de trabajo.</p>
+            <h3 id="step-title">Actividad 1: Inspección Visual</h3>
+            <p id="step-desc">Tome una fotografía o seleccione una del carrete que demuestre las condiciones físicas del tanque de diésel.</p>
             
             <div class="reference-box" id="reference-container">
-                <span style="font-size: 14px; font-weight: bold; color: #856404; display: block; margin-bottom: 8px;">📸 GUÍA VISUAL DEL REPORTE APROBADO:</span>
-                <p style="font-size: 13px; color: #664d03; margin: 0 0 10px 0;" id="ref-instruction">*Enfoque el área perimetral mostrando el extintor de seguridad y la señalética instalada.*</p>
-                <div style="width: 100%; height: 160px; background: #e9ecef; border: 1px dashed #ced4da; display: flex; align-items: center; justify-content: center; border-radius: 4px; color: #495057; font-weight: 5px;" id="ref-placeholder">
-                    [ Foto de Referencia: Paso 1 ]
-                </div>
+                <span style="font-size: 14px; font-weight: bold; color: #856404; display: block;">📸 GUÍA VISUAL DEL REPORTE APROBADO:</span>
+                <p style="font-size: 13px; color: #664d03; margin: 5px 0 10px 0;" id="ref-instruction">*Enfoque el tanque de combustible mostrando su estado general externo y válvulas.*</p>
+                <img id="img-referencia" src="referencia_paso1.jpg" alt="[Foto de Referencia no encontrada en repositorio]" class="reference-img">
             </div>
 
             <label style="font-weight: bold; color: var(--primary); display: block; margin-bottom: 10px;">Subir evidencia técnica:</label>
-            <input type="file" accept="image/*" id="camera-input" onchange="procesarFoto()">
             
-            <div id="preview-container" style="display: none; margin-top: 15px; text-align: center;">
+            <div class="capture-options">
+                <label for="input-camara" class="btn-capture">📸 Tomar Foto</label>
+                <input type="file" accept="image/*" capture="environment" id="input-camara" onchange="procesarFoto(this)">
+                
+                <label for="input-galeria" class="btn-capture btn-gallery">📁 Abrir Carrete</label>
+                <input type="file" accept="image/*" id="input-galeria" onchange="procesarFoto(this)">
+            </div>
+            
+            <div id="preview-container" style="display: none; margin-top: 20px; text-align: center;">
                 <span style="font-size: 14px; font-weight: bold; color: green; display: block; margin-bottom: 5px;">✅ Imagen cargada con éxito:</span>
                 <img id="img-preview" src="" alt="Previsualización" style="width: 100%; max-width: 400px; border-radius: 5px; border: 2px dashed green;">
             </div>
@@ -95,8 +110,7 @@
             document.getElementById('capture-card').style.display = 'block';
         }
 
-        function procesarFoto() {
-            const input = document.getElementById('camera-input');
+        function procesarFoto(input) {
             const previewContainer = document.getElementById('preview-container');
             const imgPreview = document.getElementById('img-preview');
             const feedback = document.getElementById('ia-feedback');
@@ -109,7 +123,7 @@
                     imgPreview.src = e.target.result;
                     previewContainer.style.display = 'block';
                     feedback.style.display = 'block';
-                    iaText.innerText = "Foto recibida. El Agente de IA está validando componentes técnicos y estructurando la redacción para el archivo de Word...";
+                    iaText.innerText = "Foto recibida con éxito. El Agente de IA del SPR está analizando la imagen según los criterios de la Actividad 1 del Manual...";
                 }
                 
                 reader.readAsDataURL(input.files[0]);
